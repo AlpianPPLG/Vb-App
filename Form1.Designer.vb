@@ -38,6 +38,8 @@ Partial Class Form1
         Button8 = New Button()
         Button9 = New Button()
         Button10 = New Button()
+        Label4 = New Label()
+        Button11 = New Button()
         SuspendLayout()
         ' 
         ' Button1
@@ -178,11 +180,31 @@ Partial Class Form1
         Button10.Text = "Undo"
         Button10.UseVisualStyleBackColor = True
         ' 
+        ' Label4
+        ' 
+        Label4.AutoSize = True
+        Label4.Location = New Point(111, 342)
+        Label4.Name = "Label4"
+        Label4.Size = New Size(140, 20)
+        Label4.TabIndex = 16
+        Label4.Text = "Di Buat Oleh Alpian"
+        ' 
+        ' Button11
+        ' 
+        Button11.Location = New Point(375, 264)
+        Button11.Name = "Button11"
+        Button11.Size = New Size(94, 29)
+        Button11.TabIndex = 17
+        Button11.Text = "History"
+        Button11.UseVisualStyleBackColor = True
+        ' 
         ' Form1
         ' 
         AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(800, 450)
+        Controls.Add(Button11)
+        Controls.Add(Label4)
         Controls.Add(Button10)
         Controls.Add(Button9)
         Controls.Add(Button8)
@@ -221,5 +243,7 @@ Partial Class Form1
     Friend WithEvents Button8 As Button
     Friend WithEvents Button9 As Button
     Friend WithEvents Button10 As Button
+    Friend WithEvents Label4 As Label
+    Friend WithEvents Button11 As Button
 
 End Class

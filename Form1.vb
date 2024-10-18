@@ -5,32 +5,70 @@ Public Class Form1
     ' Variabel stack untuk menyimpan nilai yang dihapus
     Private deletedValues As New Stack(Of String)
 
+    ' Variabel list untuk menyimpan riwayat hasil kalkulasi
+    Private history As New List(Of String)
+
     ' Event handler untuk tombol penjumlahan
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
         If ValidateInput() Then ' Memeriksa apakah input valid
-            boxHasil.Text = Val(boxNilai1.Text) + Val(boxNilai2.Text) ' Menjumlahkan nilai
+            Dim result As Decimal = Val(boxNilai1.Text) + Val(boxNilai2.Text) ' Menjumlahkan nilai
+            boxHasil.Text = result.ToString()
+            AddToHistory($"{boxNilai1.Text} + {boxNilai2.Text} = {result}") ' Simpan ke riwayat
         End If
     End Sub
 
     ' Event handler yang dijalankan saat form dimuat
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        ' Pesan ucapan selamat datang
+        MessageBox.Show("Selamat datang di aplikasi kalkulator! Aplikasi ini mendukung penjumlahan, pengurangan, perkalian, pembagian, dan konversi persentase.", "Selamat Datang", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
         Me.KeyPreview = True ' Mengaktifkan KeyPreview untuk menangkap event KeyDown di form
         boxNilai1.Focus() ' Mengatur fokus ke boxNilai1 ketika form dijalankan
+
+        ' Menambahkan deteksi waktu lokal untuk otomatisasi dark mode
+        Dim localTime As DateTime = DateTime.Now
+        Dim centralIndonesiaTime As DateTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(localTime, "SE Asia Standard Time")
+
+        ' Mode gelap otomatis diaktifkan antara pukul 18:00 dan 06:00
+        If centralIndonesiaTime.Hour >= 18 OrElse centralIndonesiaTime.Hour < 6 Then
+            ' Mengaktifkan mode gelap
+            BackColor = Color.FromArgb(40, 40, 40) ' Warna abu-abu gelap
+            For Each ctrl As Control In Controls
+                ctrl.BackColor = Color.FromArgb(40, 40, 40) ' Ubah latar belakang kontrol menjadi abu-abu gelap
+                ctrl.ForeColor = Color.White ' Ubah warna teks menjadi putih
+            Next
+            Button7.Text = "Light Mode" ' Ubah teks tombol
+            isDarkMode = True ' Setel status mode gelap
+        Else
+            ' Mode terang tetap
+            BackColor = Color.White ' Ubah latar belakang menjadi putih
+            For Each ctrl As Control In Controls
+                ctrl.BackColor = Color.White ' Ubah latar belakang kontrol menjadi putih
+                ctrl.ForeColor = Color.Black ' Ubah warna teks menjadi hitam
+            Next
+            Button7.Text = "Dark Mode" ' Ubah teks tombol
+            isDarkMode = False ' Setel status mode gelap
+        End If
     End Sub
 
     ' Event handler untuk tombol pengurangan
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
         If ValidateInput() Then ' Memeriksa apakah input valid
-            boxHasil.Text = Val(boxNilai1.Text) - Val(boxNilai2.Text) ' Mengurangkan nilai
+            Dim result As Decimal = Val(boxNilai1.Text) - Val(boxNilai2.Text) ' Mengurangkan nilai
+            boxHasil.Text = result.ToString()
+            AddToHistory($"{boxNilai1.Text} - {boxNilai2.Text} = {result}") ' Simpan ke riwayat
         End If
     End Sub
 
     ' Event handler untuk tombol perkalian
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
         If ValidateInput() Then ' Memeriksa apakah input valid
-            boxHasil.Text = Val(boxNilai1.Text) * Val(boxNilai2.Text) ' Mengalikan nilai
+            Dim result As Decimal = Val(boxNilai1.Text) * Val(boxNilai2.Text) ' Mengalikan nilai
+            boxHasil.Text = result.ToString()
+            AddToHistory($"{boxNilai1.Text} * {boxNilai2.Text} = {result}") ' Simpan ke riwayat
         End If
     End Sub
+
 
     ' Event handler untuk tombol pembagian
     Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
@@ -38,7 +76,9 @@ Public Class Form1
             If Val(boxNilai2.Text) = 0 Then
                 boxHasil.Text = "infinity" ' Jika nilai di boxNilai2 adalah 0, tampilkan 'infinity'
             Else
-                boxHasil.Text = Val(boxNilai1.Text) / Val(boxNilai2.Text) ' Lakukan pembagian jika tidak 0
+                Dim result As Decimal = Val(boxNilai1.Text) / Val(boxNilai2.Text) ' Lakukan pembagian jika tidak 0
+                boxHasil.Text = result.ToString()
+                AddToHistory($"{boxNilai1.Text} / {boxNilai2.Text} = {result}") ' Simpan ke riwayat
             End If
         End If
     End Sub
@@ -58,7 +98,9 @@ Public Class Form1
     ' Fungsi untuk tombol persen (Button6)
     Private Sub Button6_Click(sender As Object, e As EventArgs) Handles Button6.Click
         If ValidateInput() Then
-            boxHasil.Text = Val(boxNilai1.Text) / 100 ' Hitung persen dari nilai pertama
+            Dim result As Decimal = Val(boxNilai1.Text) / 100 ' Hitung persen dari nilai pertama
+            boxHasil.Text = result.ToString()
+            AddToHistory($"{boxNilai1.Text} % = {result}") ' Simpan ke riwayat
         End If
     End Sub
 
@@ -233,12 +275,27 @@ Public Class Form1
     Private Sub Button10_Click(sender As Object, e As EventArgs) Handles Button10.Click
         If deletedValues.Count > 0 Then
             ' Ambil nilai dari stack dan masukkan ke boxNilai1 atau boxNilai2
-            boxNilai2.Text = deletedValues.Pop() ' Kembalikan nilai kedua
+            boxNilai2.Text = deletedValues.Pop ' Kembalikan nilai kedua
             If deletedValues.Count > 0 Then
-                boxNilai1.Text = deletedValues.Pop() ' Kembalikan nilai pertama
+                boxNilai1.Text = deletedValues.Pop ' Kembalikan nilai pertama
             End If
         Else
             MessageBox.Show("Tidak ada nilai yang dapat dikembalikan!", "Undo Tidak Tersedia", MessageBoxButtons.OK, MessageBoxIcon.Warning) ' Tampilkan pesan jika tidak ada nilai yang bisa dikembalikan
+        End If
+    End Sub
+
+    ' Fungsi untuk menambahkan hasil ke riwayat
+    Private Sub AddToHistory(entry As String)
+        history.Add(entry) ' Tambahkan entri ke riwayat
+    End Sub
+
+    ' Event handler untuk tombol History
+    Private Sub Button11_Click(sender As Object, e As EventArgs) Handles Button11.Click
+        If history.Count = 0 Then
+            MessageBox.Show("Riwayat kosong!", "History", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Else
+            Dim historyMessage As String = String.Join(Environment.NewLine, history)
+            MessageBox.Show(historyMessage, "Riwayat Kalkulasi", MessageBoxButtons.OK, MessageBoxIcon.Information)
         End If
     End Sub
 
