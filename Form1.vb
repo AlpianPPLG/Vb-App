@@ -69,7 +69,6 @@ Public Class Form1
         End If
     End Sub
 
-
     ' Event handler untuk tombol pembagian
     Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
         If ValidateInput() Then ' Memeriksa apakah input valid
@@ -294,8 +293,21 @@ Public Class Form1
         If history.Count = 0 Then
             MessageBox.Show("Riwayat kosong!", "History", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Else
+            ' Menampilkan riwayat
             Dim historyMessage As String = String.Join(Environment.NewLine, history)
             MessageBox.Show(historyMessage, "Riwayat Kalkulasi", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+            ' Konfirmasi penghapusan riwayat
+            Dim result As DialogResult = MessageBox.Show("Apakah Anda yakin ingin menghapus riwayat?", "Konfirmasi Penghapusan", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+
+            If result = DialogResult.Yes Then
+                ' Menghapus riwayat jika pengguna mengklik "Yes"
+                history.Clear()
+                MessageBox.Show("Riwayat telah dihapus.", "History", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Else
+                ' Tidak melakukan apa-apa jika pengguna mengklik "No"
+                MessageBox.Show("Riwayat tidak dihapus.", "History", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            End If
         End If
     End Sub
 
